@@ -1,27 +1,21 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const Jokes = require("./models/Jokes");
+require("dotenv").config();
 
 let count;
 
 (async () => {
-  await mongoose
-    .connect(
-      "mongodb+srv://chirayugupta2003:a1TjK2TxFnALv49l@cluster0.qlz9leg.mongodb.net/?retryWrites=true&w=majority"
-    )
-    .then(async (_) => {
-      console.log("connected to db");
-      app.listen(port, () => {
-        console.log(`Listening to port ${port}`);
-      });
-
-      count = await Jokes.countDocuments();
-
-      console.log(count);
+  await mongoose.connect(process.env["MONGO_URI"]).then(async (_) => {
+    count = await Jokes.countDocuments();
+    console.log("connected to db");
+    app.listen(port, () => {
+      console.log(`Listening to port ${port}`);
     });
+  });
 })();
 
-const port = 5000;
+const port = process.env["port"] || 3000;
 const app = express();
 
 app.use(
@@ -42,7 +36,7 @@ app.get("/", async (req, res) => {
   };
 
   // res.json(joke);
-  console.log(joke);
+  // console.log(joke);
 
   res.render(__dirname + "/index.html", { joke: joke });
 });
